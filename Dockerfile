@@ -22,4 +22,4 @@ RUN chmod +x /docker-entrypoint.sh
 ENV CRON_SCHEDULE="0 0 * * *"
 ENV COMMAND="rclone version"
 
-CMD CRONJOB="$CRON_SCHEDULE $COMMAND" && echo "$CRONJOB" > /etc/crontabs/root && eval "$COMMAND" && crond -f
+CMD CRONJOB="$CRON_SCHEDULE $COMMAND" && echo "$CRONJOB" > /etc/crontabs/root && crond -f
