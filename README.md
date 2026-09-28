@@ -8,7 +8,7 @@ Rclone being entierly configurable with environment variables
 (https://rclone.org/docs/#environment-variables), it should be
 pretty flexible.
 
-See on Docker hub : https://hub.docker.com/r/olivierdalang/rclone-cron
+See on Docker Hub: https://hub.docker.com/r/migushthe2nd/rclone-cron
 
 ## Usage
 
@@ -20,11 +20,10 @@ docker run \
     -e "RCLONE_CONFIG_MYREMOTE_TYPE=s3" \
     -e "RCLONE_CONFIG_MYREMOTE_ACCESS_KEY_ID=XXX" \
     -e "RCLONE_CONFIG_MYREMOTE_SECRET_ACCESS_KEY=YYY" \
-    olivierdalang/rclone-cron
+    migushthe2nd/rclone-cron
 ```
 
-`COMMAND` is executed once on container startup (to test the config), and if
-it succeeded, cron will start in foreground.
+`COMMAND` runs on the configured cron schedule.
 
 See rclone's documentation for the command syntax and the `RCLONE_CONFIG_*`
 configuration. See cron documentation for `CRON_SCHEDULE`.
@@ -42,7 +41,7 @@ services:
   ... your other services here
 
   backup:
-    image: olivierdalang/rclone-cron:latest
+    image: migushthe2nd/rclone-cron:latest
     environment:
       - CRON_SCHEDULE=0 * * * *
       - COMMAND=rclone sync -v /your_data_volume MYDROPBOX:some_path_here
@@ -74,23 +73,15 @@ RCLONE_CONFIG_MYS3_ACL=public-read
 
 Run the container in detched mode :
 ```
-docker run --entrypoint "/bin/sh" --env-file temp -d olivierdalang/rclone-cron -c 'rclone -v sync MYDROPBOX:path/in/your/dropbox MYS3:your_bucket'
+docker run --entrypoint "/bin/sh" --env-file temp -d migushthe2nd/rclone-cron -c 'rclone -v sync MYDROPBOX:path/in/your/dropbox MYS3:your_bucket'
 ```
 
 ## Publishing
 
-Images are auto-built from github.
-
-
-|Git              |Docker tag|Notes |
-|-----------------|----------|------|
-|`master` branch  |`latest`  |Unstable|
-|`0.0.0` branches |`0.0.0`   |Unstable, version represents rclone version|
-|`0.0.0-rX` tags  |`0.0.0-rX`|Stable, version represents rclone version and rX the stable build number|
-
-### Manual push
+Builds are pushed manually. The versioned tag identifies the rclone release and image revision; `latest` points to the same image.
 
 ```
-docker build -t olivierdalang/rclone-cron:latest .
-docker push olivierdalang/rclone-cron:latest
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t migushthe2nd/rclone-cron:1.75.1-r1 \
+  -t migushthe2nd/rclone-cron:latest --push .
 ```
